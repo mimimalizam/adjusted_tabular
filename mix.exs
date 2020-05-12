@@ -14,13 +14,17 @@ defmodule AdjustedTabular.MixProject do
   def application do
     [
       applications: [:postgrex],
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      mod: {AdjustedTabular.Application, []}
     ]
   end
 
   defp deps do
     [
-      {:postgrex, "~> 0.15.4"}
+      {:postgrex, "~> 0.15.4"},
+      {:plug, "~> 1.9.0"},
+      {:plug_cowboy, "~> 2.0"},
+      {:httpoison, ">= 0.0.0", only: [:dev, :test]}
     ]
   end
 end

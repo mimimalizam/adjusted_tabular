@@ -1,3 +1,5 @@
+.PHONY: all test clean
+
 dev.setup:
 	docker-compose build
 	docker-compose run -e MIX_ENV=dev app mix deps.get
@@ -11,3 +13,13 @@ dev.console:
 
 mix.format:
 	docker-compose run -e  MIX_ENV=test app mix format --check-formatted
+
+test.setup:
+	docker-compose run -e MIX_ENV=test app mix deps.get
+	docker-compose run -e MIX_ENV=test app mix deps.compile
+
+test:
+	docker-compose run -e MIX_ENV=test app mix test
+
+test.wip:
+	docker-compose run -e MIX_ENV=test app mix test --only wip
