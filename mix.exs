@@ -22,7 +22,8 @@ defmodule AdjustedTabular.MixProject do
     [
       {:postgrex, "~> 0.15.4"},
       {:plug, "~> 1.9.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:plug_cowboy, "~> 2.0"},
+      {:httpoison, ">= 0.0.0", only: [:dev, :test]}
     ]
   end
 end
