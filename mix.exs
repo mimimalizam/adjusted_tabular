@@ -20,7 +20,9 @@ defmodule AdjustedTabular.MixProject do
 
   defp deps do
     [
-      {:postgrex, "~> 0.15.4"}
+      {:postgrex, "~> 0.15.4"},
+      {:plug, "~> 1.9.0"},
+      {:plug_cowboy, "~> 2.0"}
     ]
   end
 end
