@@ -8,6 +8,8 @@ services:
       dockerfile: Dockerfile.dev
 
     command: "mix run --no-halt"
+    ports:
+      - "4000:4000"
     tty: true
     volumes:
       - .:/app
