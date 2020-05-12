@@ -14,7 +14,8 @@ defmodule AdjustedTabular.MixProject do
   def application do
     [
       applications: [:postgrex],
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      mod: {AdjustedTabular.Application, []}
     ]
   end
 
