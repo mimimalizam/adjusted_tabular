@@ -1,0 +1,7 @@
+FROM elixir:1.10.3
+
+RUN mix local.hex --force && mix local.rebar --force
+
+ENV MIX_ENV=dev
+
+WORKDIR /app
