@@ -55,4 +55,13 @@ defmodule AdjustedTabular.Workers.Table do
       []
     )
   end
+
+  def prepare_db_csv_query(db_name, table_name) do
+    {:ok, pid} = AdjustedTabular.Database.connect(db_name)
+    s = "COPY (SELECT *FROM #{table_name}) to STDOUT WITH CSV DELIMITER ',';"
+
+    {:ok, query} = Postgrex.prepare(pid, "csv", s)
+
+    {pid, query}
+  end
 end

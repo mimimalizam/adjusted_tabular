@@ -2,6 +2,8 @@ defmodule AdjustedTabular.HttpRouter do
   use Plug.Router
   require Logger
 
+  alias AdjustedTabular.Workers.Table
+
   plug(:match)
   plug(:dispatch)
 
@@ -37,11 +39,8 @@ defmodule AdjustedTabular.HttpRouter do
     updated_conn
   end
 
-  get "/dbs/foo/tables/test" do
-    # prepare query
-    {:ok, pid} = AdjustedTabular.Database.connect("foo")
-    s = "COPY (SELECT *FROM test) to STDOUT WITH CSV DELIMITER ',';"
-    {:ok, query} = Postgrex.prepare(pid, "name!!!", s)
+  get "/dbs/:db_name/tables/:table_name" do
+    {pid, query} = Table.prepare_db_csv_query(db_name, table_name)
 
     updated_conn =
       conn
