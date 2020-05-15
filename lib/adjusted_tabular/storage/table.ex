@@ -1,5 +1,5 @@
-defmodule AdjustedTabular.Workers.Table do
-  alias AdjustedTabular.Database, as: DB
+defmodule AdjustedTabular.Storage.Table do
+  alias AdjustedTabular.Storage.Database, as: DB
   require Logger
 
   def set_up_databases do

@@ -2,7 +2,7 @@ defmodule AdjustedTabular.HttpRouter do
   use Plug.Router
   require Logger
 
-  alias AdjustedTabular.Workers.Table
+  alias AdjustedTabular.Storage.Table
 
   plug(:match)
   plug(:dispatch)

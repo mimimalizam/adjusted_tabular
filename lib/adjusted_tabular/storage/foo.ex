@@ -1,5 +1,5 @@
-defmodule AdjustedTabular.Workers.Foo do
-  alias AdjustedTabular.Workers.Table
+defmodule AdjustedTabular.Storage.Foo do
+  alias AdjustedTabular.Storage.Table
   require Logger
 
   def setup do
