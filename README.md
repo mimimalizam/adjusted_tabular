@@ -13,24 +13,33 @@
 
 ## `foo` and `bar` databases setup
 
+- Databases `foo` and `bar` are created automatically with docker compose build
+- The initialization script is available at [`docker-entrypoint-initdb.d/create-databases.sh`](/docker-entrypoint-initdb.d/create-databases.sh)
+
+<details>
+  <summary>Click for more Docker commands</summary>
+  <p>
+
 We'll use the `docker` cli to run the sql script in the postgres container.
 
 ```
-# /scripts/create_databases.sql
-CREATE DATABASE foo;
-CREATE DATABASE bar;
-
-# make dev.setup
+# set up dev environment
 make dev.setup
 
-# create databases
+# create databases from sql script
 docker ps
 docker exec -it adjusted_tabular_db_1 psql -U postgres -f /scripts/create_databases.sql
 # verify databases presence
 docker exec -it adjusted_tabular_db_1 psql -U postgres -c "\l"
 
+# /scripts/create_databases.sql
+CREATE DATABASE foo;
+CREATE DATABASE bar;
 
 # in the need of the fresh start, we can delete existing containers and images
 # example for docker container removal
 docker ps | grep adjusted_tabular_db | awk '{print $1}' | xargs docker rm -f
 ```
+
+  </p>
+</details>
