@@ -37,8 +37,36 @@ defmodule AdjustedTabular.HttpRouter do
     updated_conn
   end
 
+  get "/dbs/foo/tables/test" do
+    # prepare query
+    {:ok, pid} = AdjustedTabular.Database.connect("foo")
+    s = "COPY (SELECT *FROM test) to STDOUT WITH CSV DELIMITER ',';"
+    {:ok, query} = Postgrex.prepare(pid, "name!!!", s)
+
+    updated_conn =
+      conn
+      |> Plug.Conn.put_resp_content_type("application/csv")
+      |> send_chunked(200)
+
+    {:ok, result} =
+      Postgrex.transaction(pid, fn conn ->
+        Postgrex.stream(conn, query, [])
+        |> Stream.map(fn %Postgrex.Result{rows: rows} -> rows end)
+        |> merge_stream_chunk
+        |> Stream.map(&chunk(updated_conn, &1))
+        |> Enum.to_list()
+      end)
+
+    updated_conn
+  end
+
   match _ do
     conn
     |> send_resp(404, "Not found")
+  end
+
+  defp merge_stream_chunk(stream) do
+    stream
+    |> Stream.map(fn rows -> Enum.join(rows, "") end)
   end
 end
