@@ -27,6 +27,7 @@ defmodule AdjustedTabular.HttpRouter do
   get "/chunked" do
     updated_conn =
       conn
+      |> Plug.Conn.put_resp_content_type("application/csv")
       |> send_chunked(200)
 
     chunk(updated_conn, "Lorem ipsum dolor sit amet, consectetur adipisicin, ")

@@ -28,5 +28,15 @@ defmodule AdjustedTabular.HttpRouterTest do
       assert_receive %HTTPoison.AsyncEnd{id: ^id}, 1_000
       assert is_list(headers)
     end
+
+    test "the response header includes csv header" do
+      url = "#{@base_url}/chunked"
+      %HTTPoison.AsyncResponse{id: id} = HTTPoison.get!(url, %{}, stream_to: self())
+
+      assert_receive %HTTPoison.AsyncHeaders{id: ^id, headers: h}, 1_000
+
+      headers = Enum.into(h, %{})
+      assert headers["content-type"] =~ "application/csv"
+    end
   end
 end
