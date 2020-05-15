@@ -1,8 +1,6 @@
 defmodule AdjustedTabular.HttpRouterTest do
   use ExUnit.Case
 
-  alias AdjustedTabular.Workers.Table
-
   @base_url "http://localhost:4000"
 
   setup do
@@ -21,8 +19,8 @@ defmodule AdjustedTabular.HttpRouterTest do
     end
   end
 
-  describe "get /dbs/foo/tables/test" do
-    test "the response is chunked" do
+  describe "get /dbs/:db_name/tables/:table_name" do
+    test "when db and table exist, the response is chunked" do
       url = "#{@base_url}/dbs/foo/tables/test"
       %HTTPoison.AsyncResponse{id: id} = HTTPoison.get!(url, %{}, stream_to: self())
 
@@ -33,7 +31,7 @@ defmodule AdjustedTabular.HttpRouterTest do
       assert is_list(headers)
     end
 
-    test "the response header includes csv header" do
+    test "when db and table exist, the response header includes csv header" do
       url = "#{@base_url}/dbs/foo/tables/test"
       %HTTPoison.AsyncResponse{id: id} = HTTPoison.get!(url, %{}, stream_to: self())
 
@@ -52,6 +50,8 @@ defmodule AdjustedTabular.HttpRouterTest do
   end
 
   defp setup_test_db() do
+    alias AdjustedTabular.Workers.Table
+
     drop_test_db()
 
     columns_definition = "a integer, b integer, c integer"
