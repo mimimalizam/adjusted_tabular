@@ -2,7 +2,7 @@ defmodule AdjustedTabular.HttpRouter do
   use Plug.Router
   require Logger
 
-  alias AdjustedTabular.Workers.Table
+  alias AdjustedTabular.Storage.Query
 
   plug(:match)
   plug(:dispatch)
@@ -27,7 +27,7 @@ defmodule AdjustedTabular.HttpRouter do
   end
 
   get "/dbs/:db_name/tables/:table_name" do
-    {pid, query} = Table.prepare_db_csv_query(db_name, table_name)
+    {pid, query} = Query.compose_db_to_csv_query(db_name, table_name)
 
     updated_conn =
       conn
