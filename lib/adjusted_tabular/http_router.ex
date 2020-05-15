@@ -24,6 +24,18 @@ defmodule AdjustedTabular.HttpRouter do
     send_resp(conn, 200, "ok")
   end
 
+  get "/chunked" do
+    updated_conn =
+      conn
+      |> send_chunked(200)
+
+    chunk(updated_conn, "Lorem ipsum dolor sit amet, consectetur adipisicin, ")
+    chunk(updated_conn, "sed do eiusmod tempor incididunt ut labore et dolore")
+    chunk(updated_conn, "sunt in culpa qui officia deserunt mollit anim id es")
+
+    updated_conn
+  end
+
   match _ do
     conn
     |> send_resp(404, "Not found")
