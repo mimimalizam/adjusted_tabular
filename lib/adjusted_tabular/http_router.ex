@@ -26,19 +26,6 @@ defmodule AdjustedTabular.HttpRouter do
     send_resp(conn, 200, "ok")
   end
 
-  get "/chunked" do
-    updated_conn =
-      conn
-      |> Plug.Conn.put_resp_content_type("application/csv")
-      |> send_chunked(200)
-
-    chunk(updated_conn, "Lorem ipsum dolor sit amet, consectetur adipisicin, ")
-    chunk(updated_conn, "sed do eiusmod tempor incididunt ut labore et dolore")
-    chunk(updated_conn, "sunt in culpa qui officia deserunt mollit anim id es")
-
-    updated_conn
-  end
-
   get "/dbs/:db_name/tables/:table_name" do
     {pid, query} = Table.prepare_db_csv_query(db_name, table_name)
 
