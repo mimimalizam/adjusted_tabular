@@ -3,6 +3,8 @@ defmodule AdjustedTabular.Storage.Foo do
   alias AdjustedTabular.Storage.Query
   require Logger
 
+  @table_name "source"
+  @db_name "foo"
   @interval 1..1_000_000
   @chunk_size Keyword.get(
                 Application.get_env(:postgrex, :database_connection),
@@ -16,7 +18,7 @@ defmodule AdjustedTabular.Storage.Foo do
       Postgrex.prepare!(
         pid,
         "",
-        Query.compose_insert_rows(@chunk_size)
+        Query.compose_insert_rows(@chunk_size, @table_name)
       )
 
     Stream.zip([@interval, Stream.cycle([1, 2, 0]), Stream.cycle([1, 2, 3, 4, 0])])
@@ -38,8 +40,8 @@ defmodule AdjustedTabular.Storage.Foo do
   defp create_table() do
     {:ok, pid, _} =
       DB.set_up_table(
-        table: "source",
-        db: "foo"
+        table: @table_name,
+        db: @db_name
       )
   end
 end

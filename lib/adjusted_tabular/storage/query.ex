@@ -26,10 +26,10 @@ defmodule AdjustedTabular.Storage.Query do
     {pid, query}
   end
 
-  def compose_insert_rows(params_count) do
+  def compose_insert_rows(params_count, table_name) do
     params_string = draft_query_params(params_count)
 
-    "INSERT INTO test (a, b, c) VALUES #{params_string}"
+    "INSERT INTO #{table_name} (a, b, c) VALUES #{params_string}"
   end
 
   defp draft_query_params(n) do
