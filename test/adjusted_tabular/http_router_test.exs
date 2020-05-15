@@ -1,6 +1,8 @@
 defmodule AdjustedTabular.HttpRouterTest do
   use ExUnit.Case
 
+  alias AdjustedTabular.Storage
+
   @base_url "http://localhost:4000"
 
   setup do
@@ -43,24 +45,20 @@ defmodule AdjustedTabular.HttpRouterTest do
   end
 
   defp drop_test_db() do
-    {:ok, pid} = AdjustedTabular.Database.connect("foo")
+    {:ok, pid} = Storage.Database.connect("foo")
     s = "DROP TABLE IF EXISTS test;"
 
     Postgrex.query!(pid, s, [])
   end
 
   defp setup_test_db() do
-    alias AdjustedTabular.Workers.Table
-
     drop_test_db()
 
-    columns_definition = "a integer, b integer, c integer"
-
-    with {:ok, pid, _} <- Table.create(table: "test", db: "foo", columns: columns_definition) do
+    with {:ok, pid, _} <- Storage.Database.set_up_table(table: "test", db: "foo") do
       :ok =
         Enum.each(
           1..1000,
-          fn i -> Table.insert_row(pid, "test", i + 17, i + 19, i + 23) end
+          fn i -> Storage.Query.insert_row(pid, "test", i + 17, i + 19, i + 23) end
         )
     else
       e ->
