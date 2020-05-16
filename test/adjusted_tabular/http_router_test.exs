@@ -42,6 +42,14 @@ defmodule AdjustedTabular.HttpRouterTest do
       headers = Enum.into(h, %{})
       assert headers["content-type"] =~ "application/csv"
     end
+
+    test "when db and table exist, the response is correct" do
+      url = "#{@base_url}/dbs/foo/tables/test"
+      {response, _} = System.cmd("curl", ["--raw", url])
+
+      assert response ==
+        "1E\r\n1,1,1\n2,2,2\n3,0,3\n4,1,4\n5,2,0\n\r\n0\r\n\r\n"
+    end
   end
 
   defp drop_test_db() do
@@ -57,8 +65,8 @@ defmodule AdjustedTabular.HttpRouterTest do
     with {:ok, pid, _} <- Storage.Database.set_up_table(table: "test", db: "foo") do
       :ok =
         Enum.each(
-          1..1000,
-          fn i -> Storage.Query.insert_row(pid, "test", i + 17, i + 19, i + 23) end
+          1..5,
+          fn i -> Storage.Query.insert_row(pid, "test", i, rem(i, 3), rem(i, 5)) end
         )
     else
       e ->
