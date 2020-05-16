@@ -12,7 +12,7 @@ defmodule AdjustedTabular.Storage.Foo do
               )
 
   def seed do
-    {:ok, pid, _} = create_table()
+    {:ok, pid, _} = connect_or_create_table()
 
     query =
       Postgrex.prepare!(
@@ -37,7 +37,7 @@ defmodule AdjustedTabular.Storage.Foo do
     |> Postgrex.transaction(fn conn -> Postgrex.execute(pid, query, values) end)
   end
 
-  defp create_table() do
+  defp connect_or_create_table() do
     {:ok, pid, _} =
       DB.set_up_table(
         table: @table_name,
