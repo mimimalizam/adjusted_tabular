@@ -4,9 +4,30 @@ defmodule AdjustedTabular.Storage.FooTest do
   alias AdjustedTabular.Storage.Query
 
   describe "seed" do
-    test "when source table has data, it doesn't add new rows" do
-      assert Query.compose_insert_rows(3, "test") ==
-               "INSERT INTO test (a, b, c) VALUES ($1, $2, $3), ($4, $5, $6), ($7, $8, $9)"
+    test "when there are few rows in the table, it doesn't add new rows" do
+      {:ok, pid} = Support.Factories.setup_test_db(2)
+
+      # simmulate Foo.seed
+      query =
+        Postgrex.prepare!(
+          pid,
+          "",
+          Query.compose_insert_rows(2, "test")
+        )
+
+      AdjustedTabular.Storage.Foo.seed("test")
+
+      # prepare assertion
+      q =
+        Postgrex.prepare!(
+          pid,
+          "",
+          "SELECT COUNT(*) FROM test;"
+        )
+
+      {:ok, q, %Postgrex.Result{rows: [[n]]}} = Postgrex.execute(pid, q, [])
+
+      assert n == 2
     end
   end
 end

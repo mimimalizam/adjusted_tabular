@@ -3,7 +3,6 @@ defmodule AdjustedTabular.Storage.Foo do
   alias AdjustedTabular.Storage.Query
   require Logger
 
-  @table_name "source"
   @db_name "foo"
   @interval 1..1_000_000
   @chunk_size Keyword.get(
@@ -11,21 +10,36 @@ defmodule AdjustedTabular.Storage.Foo do
                 :pool_size
               )
 
-  def seed do
-    {:ok, pid, _} = connect_or_create_table()
+  def seed(table_name) do
+    {:ok, pid, _} = connect_or_create_table(table_name)
 
-    query =
+    if table_is_empty?(pid, table_name) do
+      query =
+        Postgrex.prepare!(
+          pid,
+          "",
+          Query.compose_insert_rows(@chunk_size, @table_name)
+        )
+
+      Stream.zip([@interval, Stream.cycle([1, 2, 0]), Stream.cycle([1, 2, 3, 4, 0])])
+      |> Stream.map(&Tuple.to_list(&1))
+      |> Stream.chunk_every(@chunk_size)
+      |> Task.async_stream(&process_chunk(&1, pid, query))
+      |> Stream.run()
+    end
+  end
+
+  def table_is_empty?(pid, table_name) do
+    q =
       Postgrex.prepare!(
         pid,
         "",
-        Query.compose_insert_rows(@chunk_size, @table_name)
+        "SELECT COUNT(*) FROM #{table_name};"
       )
 
-    Stream.zip([@interval, Stream.cycle([1, 2, 0]), Stream.cycle([1, 2, 3, 4, 0])])
-    |> Stream.map(&Tuple.to_list(&1))
-    |> Stream.chunk_every(@chunk_size)
-    |> Task.async_stream(&process_chunk(&1, pid, query))
-    |> Stream.run()
+    {:ok, q, %Postgrex.Result{rows: [[n]]}} = Postgrex.execute(pid, q, [])
+
+    n == 0
   end
 
   defp process_chunk(chunk, pid, query) do
@@ -37,10 +51,10 @@ defmodule AdjustedTabular.Storage.Foo do
     |> Postgrex.transaction(fn conn -> Postgrex.execute(pid, query, values) end)
   end
 
-  defp connect_or_create_table() do
+  defp connect_or_create_table(table_name) do
     {:ok, pid, _} =
       DB.set_up_table(
-        table: @table_name,
+        table: table_name,
         db: @db_name
       )
   end
