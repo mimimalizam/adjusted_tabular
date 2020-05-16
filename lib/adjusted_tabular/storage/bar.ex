@@ -3,18 +3,19 @@ defmodule AdjustedTabular.Storage.Bar do
   alias AdjustedTabular.Storage.Query
   require Logger
 
-  @table_name "dest"
   @db_name "bar"
 
-  def seed do
-    {:ok, bar_pid, _} = create_table()
+  def seed(table_name) do
+    {:ok, bar_pid, _} = connect_or_create_table(table_name)
     {:ok, foo_pid} = DB.connect("foo")
 
-    Task.async(fn -> copy_source_to_file(foo_pid) end)
-    |> Task.await(:infinity)
+    if Query.table_is_empty?(bar_pid, table_name) do
+      Task.async(fn -> copy_source_to_file(foo_pid) end)
+      |> Task.await(:infinity)
 
-    Task.async(fn -> copy_dest_from_file(bar_pid) end)
-    |> Task.await(:infinity)
+      Task.async(fn -> copy_dest_from_file(bar_pid) end)
+      |> Task.await(:infinity)
+    end
   end
 
   defp copy_source_to_file(pid) do
@@ -31,10 +32,10 @@ defmodule AdjustedTabular.Storage.Bar do
     end)
   end
 
-  defp create_table() do
+  defp connect_or_create_table(table_name) do
     {:ok, pid, _} =
       DB.set_up_table(
-        table: @table_name,
+        table: table_name,
         db: @db_name
       )
   end

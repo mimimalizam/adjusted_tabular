@@ -2,6 +2,10 @@ defmodule AdjustedTabular.Storage.Query do
   alias AdjustedTabular.Storage.Database, as: DB
   require Logger
 
+  def table_is_empty?(pid, table_name) do
+    row_count(pid, table_name) == {pid, 0}
+  end
+
   def insert_row(pid, table, a, b, c) do
     Postgrex.query!(
       pid,
@@ -35,6 +39,7 @@ defmodule AdjustedTabular.Storage.Query do
   defp draft_query_params(n) do
     Enum.reduce(2..n, "($1, $2, $3)", fn n, acc ->
       a = (n - 1) * 3
+
       acc <> ", ($#{a + 1}, $#{a + 2}, $#{a + 3})"
     end)
   end

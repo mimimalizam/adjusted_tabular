@@ -12,7 +12,7 @@ defmodule Mix.Tasks.Seed do
 
     Logger.info("🌱 Seeding table dest in bar database")
 
-    AdjustedTabular.Storage.Bar.seed()
+    AdjustedTabular.Storage.Bar.seed("dest")
     Logger.info("✅ Done...")
   end
 end

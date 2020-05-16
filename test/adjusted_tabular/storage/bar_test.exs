@@ -1,13 +1,13 @@
-defmodule AdjustedTabular.Storage.FooTest do
+defmodule AdjustedTabular.Storage.BarTest do
   use ExUnit.Case
 
   alias AdjustedTabular.Storage.Query
 
   describe "seed" do
     test "when there are few rows in the table, it doesn't add new rows" do
-      {:ok, pid} = Support.Factories.setup_test_table("foo", 2)
+      {:ok, pid} = Support.Factories.setup_test_table("bar", 2)
 
-      # simmulate Foo.seed
+      # simmulate Bar.seed
       query =
         Postgrex.prepare!(
           pid,
@@ -15,7 +15,7 @@ defmodule AdjustedTabular.Storage.FooTest do
           Query.compose_insert_rows(2, "test")
         )
 
-      AdjustedTabular.Storage.Foo.seed("test")
+      AdjustedTabular.Storage.Bar.seed("test")
 
       # prepare assertion
       q =

@@ -13,12 +13,12 @@ defmodule AdjustedTabular.Storage.Foo do
   def seed(table_name) do
     {:ok, pid, _} = connect_or_create_table(table_name)
 
-    if table_is_empty?(pid, table_name) do
+    if Query.table_is_empty?(pid, table_name) do
       query =
         Postgrex.prepare!(
           pid,
           "",
-          Query.compose_insert_rows(@chunk_size, @table_name)
+          Query.compose_insert_rows(@chunk_size, table_name)
         )
 
       Stream.zip([@interval, Stream.cycle([1, 2, 0]), Stream.cycle([1, 2, 3, 4, 0])])
@@ -27,19 +27,6 @@ defmodule AdjustedTabular.Storage.Foo do
       |> Task.async_stream(&process_chunk(&1, pid, query))
       |> Stream.run()
     end
-  end
-
-  def table_is_empty?(pid, table_name) do
-    q =
-      Postgrex.prepare!(
-        pid,
-        "",
-        "SELECT COUNT(*) FROM #{table_name};"
-      )
-
-    {:ok, q, %Postgrex.Result{rows: [[n]]}} = Postgrex.execute(pid, q, [])
-
-    n == 0
   end
 
   defp process_chunk(chunk, pid, query) do
