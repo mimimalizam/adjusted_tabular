@@ -17,6 +17,7 @@ Additionally, it will create `foo` and `bar` databases.
 
 - Databases `foo` and `bar` are created automatically with docker compose build (which is part of `make dev.setup`
 - The initialization script is available at [`docker-entrypoint-initdb.d/create-databases.sh`](/docker-entrypoint-initdb.d/create-databases.sh)
+- Tables `source` from `foo` and `dest` from `bar` are being populated with a mix task `seed`. It can be executed with `make mix.seed` from console.
 
 <details>
   <summary>Click for more Docker commands</summary>

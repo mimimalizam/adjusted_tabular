@@ -10,12 +10,22 @@ defmodule AdjustedTabular.Storage.Bar do
     {:ok, bar_pid, _} = create_table()
     {:ok, foo_pid} = DB.connect("foo")
 
-    Postgrex.transaction(foo_pid, fn conn ->
+    Task.async(fn -> copy_source_to_file(foo_pid) end)
+    |> Task.await(:infinity)
+
+    Task.async(fn -> copy_dest_from_file(bar_pid) end)
+    |> Task.await(:infinity)
+  end
+
+  defp copy_source_to_file(pid) do
+    Postgrex.transaction(pid, fn conn ->
       Postgrex.stream(conn, "COPY source TO '/tmp/source.csv' DELIMITER ',';", [])
       |> Enum.to_list()
     end)
+  end
 
-    Postgrex.transaction(bar_pid, fn conn ->
+  defp copy_dest_from_file(pid) do
+    Postgrex.transaction(pid, fn conn ->
       Postgrex.stream(conn, "COPY dest FROM '/tmp/source.csv' DELIMITER ',';", [])
       |> Enum.to_list()
     end)
