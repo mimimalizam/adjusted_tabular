@@ -7,7 +7,18 @@ defmodule AdjustedTabular.Storage.Bar do
   @db_name "bar"
 
   def seed do
-    {:ok, pid, _} = create_table()
+    {:ok, bar_pid, _} = create_table()
+    {:ok, foo_pid} = DB.connect("foo")
+
+    Postgrex.transaction(foo_pid, fn conn ->
+      Postgrex.stream(conn, "COPY source TO '/tmp/source.csv' DELIMITER ',';", [])
+      |> Enum.to_list()
+    end)
+
+    Postgrex.transaction(bar_pid, fn conn ->
+      Postgrex.stream(conn, "COPY dest FROM '/tmp/source.csv' DELIMITER ',';", [])
+      |> Enum.to_list()
+    end)
   end
 
   defp create_table() do
