@@ -10,14 +10,16 @@ Requirements: `docker-compose`
       ```
 
 To set up the environment call `make dev.setup` from the project's root path.
-The command will bootstrap application and postgres containers.
-Additionally, it will create `foo` and `bar` databases.
+The command will
+- bootstrap the application and postgres docker containers
+- it creates `foo` and `bar` databases
+- creates and populates tables `source`(within `foo`) and `dest`(within `bar`)
 
 ## `foo` and `bar` databases setup
 
-- Databases `foo` and `bar` are created automatically with docker compose build (which is part of `make dev.setup`
-- The initialization script is available at [`docker-entrypoint-initdb.d/create-databases.sh`](/docker-entrypoint-initdb.d/create-databases.sh)
-- Tables `source` from `foo` and `dest` from `bar` are being populated with a mix task `seed`. It can be executed with `make mix.seed` from console.
+`make dev.setup` taget creates the databases and populates the tables.
+The database initialization script is available at [`docker-entrypoint-initdb.d/create-databases.sh`](/docker-entrypoint-initdb.d/create-databases.sh)
+Tables `source` and `dest` from `bar` are populated with a mix task `seed`.
 
 <details>
   <summary>Click for more Docker commands</summary>
