@@ -4,8 +4,9 @@ dev.setup:
 	docker-compose build
 	docker-compose run -e MIX_ENV=dev app mix deps.get
 	docker-compose run -e MIX_ENV=dev app mix deps.compile
+	docker-compose run -e MIX_ENV=dev app mix seed
 
-dev.run:
+dev.server:
 	docker-compose run --service-ports -e MIX_ENV=dev app elixir --sname app -S mix run --no-halt
 
 dev.console:
