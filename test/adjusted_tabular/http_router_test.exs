@@ -48,5 +48,13 @@ defmodule AdjustedTabular.HttpRouterTest do
       assert response ==
                "1E\r\n1,1,1\n2,2,2\n3,0,3\n4,1,4\n5,2,0\n\r\n0\r\n\r\n"
     end
+
+    @tag :wip
+    test "when table doesn't exists, it returns 404" do
+      url = "#{@base_url}/dbs/foo/tables/nonexistent"
+
+      %HTTPoison.AsyncResponse{id: id} = HTTPoison.get!(url, %{}, stream_to: self())
+      assert_receive %HTTPoison.AsyncStatus{id: ^id, code: 404}, 1_000
+    end
   end
 end
