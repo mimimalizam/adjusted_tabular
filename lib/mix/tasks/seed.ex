@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Seed do
   require Logger
 
   def run(_) do
-    {:ok, _started} = Application.ensure_all_started(:postgrex)
+    {:ok, _started} = Application.ensure_all_started(:adjusted_tabular)
     AdjustedTabular.Storage.Seed.run()
   end
 end

@@ -4,27 +4,25 @@ defmodule AdjustedTabular.Storage.Bar do
   require Logger
 
   @db_name "bar"
+  @pid :bar_pid
 
   def seed(table_name) do
     Logger.info("🌱 Inspecting table #{table_name} in #{@db_name} database")
-    {:ok, bar_pid, _} = connect_or_create_table(table_name)
 
-    seed_if_empty(bar_pid, table_name, @db_name)
+    ensure_table_exists(table_name)
+
+    seed_if_empty(table_name)
 
     Logger.info("✅ Done...")
   end
 
-  def seed_if_empty(bar_pid, table_name, db_name) do
-    {:ok, foo_pid} = DB.connect("foo")
+  def seed_if_empty(table_name) do
+    if Query.table_is_empty?(@pid, table_name) do
+      Logger.info("🌱 Seeding table #{table_name} in #{@db_name} database")
 
-    if Query.table_is_empty?(bar_pid, table_name) do
-      Logger.info("🌱 Seeding table #{table_name} in #{db_name} database")
+      copy_source_to_file(:foo_pid)
 
-      Task.async(fn -> copy_source_to_file(foo_pid) end)
-      |> Task.await(:infinity)
-
-      Task.async(fn -> copy_dest_from_file(bar_pid) end)
-      |> Task.await(:infinity)
+      copy_dest_from_file(@pid)
     end
   end
 
@@ -42,11 +40,11 @@ defmodule AdjustedTabular.Storage.Bar do
     end)
   end
 
-  defp connect_or_create_table(table_name) do
+  defp ensure_table_exists(table_name) do
     {:ok, pid, _} =
       DB.set_up_table(
         table: table_name,
-        db: @db_name
+        pid: @pid
       )
   end
 end

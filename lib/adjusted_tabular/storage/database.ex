@@ -2,13 +2,10 @@ defmodule AdjustedTabular.Storage.Database do
   alias AdjustedTabular.Storage.Query
   @pg_env Application.get_env(:postgrex, :database_connection)
 
-  def connect(db_name) do
-    {:ok, pid} = env(database: db_name) |> Postgrex.start_link()
-  end
+  def conn_config(:foo), do: Keyword.merge(@pg_env, database: "foo", name: :foo_pid)
+  def conn_config(:bar), do: Keyword.merge(@pg_env, database: "bar", name: :bar_pid)
 
-  def set_up_table(table: table_name, db: db_name) do
-    {:ok, pid} = connect(db_name)
-
+  def set_up_table(table: table_name, pid: pid) do
     try do
       {:ok, pid, Query.create_table(pid, table_name)}
     rescue
@@ -31,5 +28,6 @@ defmodule AdjustedTabular.Storage.Database do
   defp parse_error(%Postgrex.Error{postgres: %{code: :duplicate_table}}), do: :table_exists
   defp parse_error(_), do: :unhandled_error
 
-  defp env(params \\ []), do: Keyword.merge(@pg_env, params)
+  def get_pid("foo"), do: :foo_pid
+  def get_pid("bar"), do: :bar_pid
 end
