@@ -11,6 +11,8 @@ defmodule AdjustedTabular.Storage.Foo do
               )
 
   def seed(table_name) do
+    Logger.info("🌱 Seeding table #{table_name} in #{@db_name} database")
+
     {:ok, pid, _} = connect_or_create_table(table_name)
 
     if Query.table_is_empty?(pid, table_name) do
@@ -27,6 +29,8 @@ defmodule AdjustedTabular.Storage.Foo do
       |> Task.async_stream(&process_chunk(&1, pid, query))
       |> Stream.run()
     end
+
+    Logger.info("✅ Done...")
   end
 
   defp process_chunk(chunk, pid, query) do

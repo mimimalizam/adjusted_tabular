@@ -4,15 +4,6 @@ defmodule Mix.Tasks.Seed do
 
   def run(_) do
     {:ok, _started} = Application.ensure_all_started(:postgrex)
-
-    Logger.info("🌱 Seeding table source in foo database")
-
-    AdjustedTabular.Storage.Foo.seed("source")
-    Logger.info("✅ Done...")
-
-    Logger.info("🌱 Seeding table dest in bar database")
-
-    AdjustedTabular.Storage.Bar.seed("dest")
-    Logger.info("✅ Done...")
+    AdjustedTabular.Storage.Seed.run()
   end
 end
