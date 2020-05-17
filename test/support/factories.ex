@@ -2,7 +2,7 @@ defmodule Support.Factories do
   alias AdjustedTabular.Storage.{Database, Query}
 
   def setup_test_table(db_pid, rows_count \\ 5) do
-    drop_test_db(db_pid)
+    drop_table(db_pid, "test")
 
     with {:ok, pid, _} <- Database.set_up_table(table: "test", pid: db_pid) do
       insert_query_values =
@@ -22,10 +22,10 @@ defmodule Support.Factories do
     end
   end
 
-  defp drop_test_db(db_pid) do
+  def drop_table(db_pid, name) do
     Postgrex.query!(
       db_pid,
-      "DROP TABLE IF EXISTS test;",
+      "DROP TABLE IF EXISTS #{name};",
       []
     )
   end

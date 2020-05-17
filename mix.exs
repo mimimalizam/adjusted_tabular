@@ -25,10 +25,12 @@ defmodule AdjustedTabular.MixProject do
       {:postgrex, "~> 0.15.4"},
       {:plug, "~> 1.9.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:httpoison, ">= 0.0.0", only: [:dev, :test]}
+      {:httpoison, ">= 0.0.0", only: [:dev, :test]},
+      {:benchee, "~> 1.0", only: :dev}
     ]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:dev), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 end
