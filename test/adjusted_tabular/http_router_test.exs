@@ -4,7 +4,7 @@ defmodule AdjustedTabular.HttpRouterTest do
   @base_url "http://localhost:4000"
 
   setup do
-    Support.Factories.setup_test_table("foo")
+    Support.Factories.setup_test_table(:foo_pid)
 
     HTTPoison.start()
     :ok

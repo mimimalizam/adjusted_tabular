@@ -27,4 +27,7 @@ defmodule AdjustedTabular.Storage.Database do
 
   defp parse_error(%Postgrex.Error{postgres: %{code: :duplicate_table}}), do: :table_exists
   defp parse_error(_), do: :unhandled_error
+
+  def get_pid("foo"), do: :foo_pid
+  def get_pid("bar"), do: :bar_pid
 end

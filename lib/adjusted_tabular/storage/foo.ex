@@ -52,7 +52,7 @@ defmodule AdjustedTabular.Storage.Foo do
     {:ok, pid, _} =
       DB.set_up_table(
         table: table_name,
-        db: @db_name
+        pid: :foo_pid
       )
   end
 end
