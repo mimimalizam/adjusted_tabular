@@ -6,19 +6,26 @@ defmodule AdjustedTabular.Storage.Bar do
   @db_name "bar"
 
   def seed(table_name) do
-    Logger.info("🌱 Seeding table #{table_name} in #{@db_name} database")
+    Logger.info("🌱 Inspecting table #{table_name} in #{@db_name} database")
     {:ok, bar_pid, _} = connect_or_create_table(table_name)
+
+    seed_if_empty(bar_pid, table_name, @db_name)
+
+    Logger.info("✅ Done...")
+  end
+
+  def seed_if_empty(bar_pid, table_name, db_name) do
     {:ok, foo_pid} = DB.connect("foo")
 
     if Query.table_is_empty?(bar_pid, table_name) do
+      Logger.info("🌱 Seeding table #{table_name} in #{db_name} database")
+
       Task.async(fn -> copy_source_to_file(foo_pid) end)
       |> Task.await(:infinity)
 
       Task.async(fn -> copy_dest_from_file(bar_pid) end)
       |> Task.await(:infinity)
     end
-
-    Logger.info("✅ Done...")
   end
 
   defp copy_source_to_file(pid) do

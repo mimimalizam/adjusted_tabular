@@ -5,10 +5,14 @@ defmodule Support.Factories do
     drop_test_db(db_name)
 
     with {:ok, pid, _} <- Storage.Database.set_up_table(table: "test", db: db_name) do
-      Enum.each(
-        1..rows_count,
-        fn i -> Storage.Query.insert_row(pid, "test", i, rem(i, 3), rem(i, 5)) end
-      )
+      insert_query_values =
+        1..rows_count
+        |> Enum.map(fn n -> [n, rem(n, 3), rem(n, 5)] end)
+        |> List.flatten()
+
+      Storage.Query.compose_insert_rows(rows_count, "test")
+      |> (&Postgrex.prepare!(pid, "", &1)).()
+      |> (&Postgrex.execute(pid, &1, insert_query_values)).()
 
       {:ok, pid}
     else

@@ -1,33 +1,15 @@
 defmodule AdjustedTabular.Storage.FooTest do
   use ExUnit.Case
 
-  alias AdjustedTabular.Storage.Query
+  alias AdjustedTabular.Storage.Query, as: Q
 
-  describe "seed" do
+  describe "seed_if_empty" do
     test "when there are few rows in the table, it doesn't add new rows" do
-      {:ok, pid} = Support.Factories.setup_test_table("foo", 2)
+      {:ok, pid} = Support.Factories.setup_test_table("foo", 4)
 
-      # simmulate Foo.seed
-      query =
-        Postgrex.prepare!(
-          pid,
-          "",
-          Query.compose_insert_rows(2, "test")
-        )
+      AdjustedTabular.Storage.Foo.seed_if_empty(pid, "test", "foo", 4, 2)
 
-      AdjustedTabular.Storage.Foo.seed("test")
-
-      # prepare assertion
-      q =
-        Postgrex.prepare!(
-          pid,
-          "",
-          "SELECT COUNT(*) FROM test;"
-        )
-
-      {:ok, q, %Postgrex.Result{rows: [[n]]}} = Postgrex.execute(pid, q, [])
-
-      assert n == 2
+      assert Q.row_count(pid, "test") == {pid, 4}
     end
   end
 end
