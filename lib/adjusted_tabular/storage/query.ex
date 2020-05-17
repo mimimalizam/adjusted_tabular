@@ -23,9 +23,13 @@ defmodule AdjustedTabular.Storage.Query do
 
   def compose_db_to_csv_query(db_name, table_name) do
     pid = DB.get_pid(db_name)
-    s = "COPY (SELECT *FROM #{table_name}) to STDOUT WITH CSV DELIMITER ',';"
 
-    {:ok, query} = Postgrex.prepare(pid, "csv", s)
+    {:ok, query} =
+      Postgrex.prepare(
+        pid,
+        "csv",
+        "COPY (SELECT *FROM #{table_name}) to STDOUT WITH CSV DELIMITER ',';"
+      )
 
     {pid, query}
   end
