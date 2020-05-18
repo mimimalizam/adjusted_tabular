@@ -22,16 +22,20 @@ defmodule AdjustedTabular.Storage.Query do
   end
 
   def compose_db_to_csv_query(db_name, table_name) do
-    pid = DB.get_pid(db_name)
+    case DB.get_pid(db_name) do
+      :not_found ->
+        :database_not_found
 
-    {:ok, query} =
-      Postgrex.prepare(
-        pid,
-        "csv",
-        "COPY (SELECT *FROM #{table_name}) to STDOUT WITH CSV DELIMITER ',';"
-      )
+      pid ->
+        {:ok, query} =
+          Postgrex.prepare(
+            pid,
+            "csv",
+            "COPY (SELECT *FROM #{table_name}) to STDOUT WITH CSV DELIMITER ',';"
+          )
 
-    {pid, query}
+        {pid, query}
+    end
   end
 
   def compose_insert_rows(insert_values_count, table_name) do

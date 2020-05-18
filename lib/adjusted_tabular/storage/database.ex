@@ -52,4 +52,5 @@ defmodule AdjustedTabular.Storage.Database do
 
   def get_pid("foo"), do: :foo_pid
   def get_pid("bar"), do: :bar_pid
+  def get_pid(_), do: :not_found
 end

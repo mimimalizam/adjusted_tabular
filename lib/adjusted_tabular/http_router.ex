@@ -28,9 +28,8 @@ defmodule AdjustedTabular.HttpRouter do
   end
 
   get "/dbs/:db_name/tables/:table_name" do
-    {pid, query} = Query.compose_db_to_csv_query(db_name, table_name)
-
-    if DB.table_exists?(pid, table_name) do
+    with {pid, query} <- Query.compose_db_to_csv_query(db_name, table_name),
+         true <- DB.table_exists?(pid, table_name) do
       updated_conn =
         conn
         |> Plug.Conn.put_resp_content_type("application/csv")
@@ -47,9 +46,15 @@ defmodule AdjustedTabular.HttpRouter do
 
       updated_conn
     else
-      conn
-      |> Plug.Conn.put_resp_content_type("application/csv")
-      |> send_chunked(404)
+      :database_not_found ->
+        conn
+        |> Plug.Conn.put_resp_content_type("application/csv")
+        |> send_chunked(404)
+
+      false ->
+        conn
+        |> Plug.Conn.put_resp_content_type("application/csv")
+        |> send_chunked(404)
     end
   end
 

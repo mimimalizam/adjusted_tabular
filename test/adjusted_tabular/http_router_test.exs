@@ -55,5 +55,12 @@ defmodule AdjustedTabular.HttpRouterTest do
       HTTPoison.get!(url, %{}, stream_to: self())
       assert_receive %HTTPoison.AsyncStatus{code: 404}, 1_000
     end
+
+    test "when db doesn't exists, it returns 404" do
+      url = "#{@base_url}/dbs/non/tables/nonexistent"
+
+      HTTPoison.get!(url, %{}, stream_to: self())
+      assert_receive %HTTPoison.AsyncStatus{code: 404}, 1_000
+    end
   end
 end
