@@ -22,6 +22,7 @@ defmodule AdjustedTabular.MixProject do
 
   defp deps do
     [
+      {:telemetry, "~> 0.4.1"},
       {:postgrex, "~> 0.15.4"},
       {:plug, "~> 1.9.0"},
       {:plug_cowboy, "~> 2.0"},
