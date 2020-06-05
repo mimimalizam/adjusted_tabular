@@ -28,6 +28,8 @@ defmodule AdjustedTabular.HttpRouter do
   end
 
   get "/dbs/:db_name/tables/:table_name" do
+    start = System.monotonic_time()
+
     with {pid, query} <- Query.compose_db_to_csv_query(db_name, table_name),
          true <- DB.table_exists?(pid, table_name) do
       updated_conn =
@@ -44,17 +46,19 @@ defmodule AdjustedTabular.HttpRouter do
           |> Enum.to_list()
         end)
 
-      updated_conn
+      telemetry_execute(updated_conn, start)
     else
       :database_not_found ->
         conn
         |> Plug.Conn.put_resp_content_type("application/csv")
         |> send_chunked(404)
+        |> telemetry_execute(start)
 
       false ->
         conn
         |> Plug.Conn.put_resp_content_type("application/csv")
         |> send_chunked(404)
+        |> telemetry_execute(start)
     end
   end
 
@@ -66,5 +70,11 @@ defmodule AdjustedTabular.HttpRouter do
   defp merge_stream_chunk(stream) do
     stream
     |> Stream.map(fn rows -> Enum.join(rows, "") end)
+  end
+
+  def telemetry_execute(conn, start) do
+    :telemetry.execute([:http, :request], %{duration: System.monotonic_time() - start}, conn)
+
+    conn
   end
 end

@@ -14,7 +14,7 @@ defmodule AdjustedTabular.MixProject do
 
   def application do
     [
-      applications: [:postgrex],
+      applications: [:postgrex, :telemetry],
       extra_applications: [:logger],
       mod: {AdjustedTabular.Application, []}
     ]
@@ -22,6 +22,7 @@ defmodule AdjustedTabular.MixProject do
 
   defp deps do
     [
+      {:telemetry, "~> 0.4.1"},
       {:postgrex, "~> 0.15.4"},
       {:plug, "~> 1.9.0"},
       {:plug_cowboy, "~> 2.0"},

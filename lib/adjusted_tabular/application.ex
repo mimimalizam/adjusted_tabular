@@ -10,6 +10,15 @@ defmodule AdjustedTabular.Application do
   def start(_type, _args) do
     Logger.info("Running application in #{Mix.env()} environment")
 
+    :ok =
+      :telemetry.attach(
+        # unique handler id
+        "http-router-metrics",
+        [:http, :request],
+        &AdjustedTabular.Metrics.Observer.handle_event/4,
+        nil
+      )
+
     Supervisor.start_link(children, options)
   end
 
